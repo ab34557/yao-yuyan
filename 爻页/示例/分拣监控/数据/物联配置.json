@@ -1,0 +1,1 @@
+{"mqtt主机":"127.0.0.1","mqtt端口":1883,"mqtt主题":"分拣线/遥测","modbus主机":"127.0.0.1","modbus端口":15020,"modbus从站":1,"采集间隔秒":2,"自动重连":true,"启用MQTT":true,"启用Modbus":true}
