@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>爻语 · 在线 IDE</title>
+<meta name="description" content="爻语（Yao）在线 IDE：中文单字关键字的编程语言，浏览器内编辑并运行。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2316212b'/%3E%3Ctext x='32' y='45' font-size='38' text-anchor='middle' fill='%23f0b429' font-family='serif'%3E%E7%88%BB%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="应用">
+
+  <header class="顶栏">
+    <div class="品牌">
+      <span class="品牌字形" aria-hidden="true">爻</span>
+      <span class="品牌文字">
+        <strong>爻语</strong>
+        <span class="品牌副">在线 IDE</span>
+      </span>
+    </div>
+    <div class="顶栏右">
+      <span class="后端状态" id="后端状态" title="后端连接状态">
+        <span class="点" aria-hidden="true"></span><span id="后端文本">正在连接…</span>
+      </span>
+    </div>
+  </header>
+
+  <div class="工具条">
+    <label class="示例组">
+      <span class="工具标签">示例</span>
+      <select id="示例选择" aria-label="选择示例代码">
+        <option value="">加载中…</option>
+      </select>
+    </label>
+    <div class="工具右侧">
+      <button type="button" id="运行按钮" class="主按钮" title="运行代码（Ctrl+Enter）">
+        <span class="按钮符" aria-hidden="true">▶</span>
+        <span class="按钮文字">运行</span>
+        <span class="键位">Ctrl↵</span>
+      </button>
+      <button type="button" id="清空按钮" class="次按钮" title="清空编辑器">清空</button>
+    </div>
+  </div>
+
+  <main class="主体">
+    <!-- 左：编辑器 -->
+    <section class="面板 编辑面板" aria-label="代码编辑器">
+      <div class="面板头">
+        <span class="文件名">主.yao</span>
+        <span class="面板头右">
+          <span id="字数">0 字</span>
+          <span class="分隔">·</span>
+          <span id="光标位">第 1 行 第 1 列</span>
+        </span>
+      </div>
+      <div class="编辑区" id="编辑区">
+        <div class="行号栏" id="行号栏" aria-hidden="true"></div>
+        <div class="代码层">
+          <pre class="高亮层" id="高亮层" aria-hidden="true"><code id="高亮码"></code></pre>
+          <textarea id="代码" class="代码框" spellcheck="false" autocapitalize="off"
+                    autocorrect="off" autocomplete="off" wrap="off"
+                    aria-label="爻语代码编辑器"></textarea>
+        </div>
+      </div>
+      <div class="编辑脚注">
+        <span>Tab 缩进两格 · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> 运行</span>
+        <span class="右">代码自动保存在本机浏览器</span>
+      </div>
+    </section>
+
+    <!-- 右：输出 / 速查 -->
+    <section class="面板 侧面板" aria-label="输出与速查">
+      <div class="标签栏" role="tablist" aria-label="右侧面板">
+        <button type="button" class="标签 活动" id="标签-输出" role="tab"
+                aria-selected="true" aria-controls="页-输出" data-页="输出">输出</button>
+        <button type="button" class="标签" id="标签-速查" role="tab"
+                aria-selected="false" aria-controls="页-速查" data-页="速查">速查</button>
+        <span class="标签栏右" id="耗时"></span>
+      </div>
+
+      <div class="页 活动" id="页-输出" role="tabpanel" aria-labelledby="标签-输出">
+        <div class="运行状态条">
+          <span class="状态徽" id="运行状态">就绪</span>
+          <span class="状态提示" id="状态提示">按 Ctrl+Enter 运行当前代码</span>
+        </div>
+
+        <div class="输出块">
+          <h3 class="块标题">标准输出</h3>
+          <pre class="输出文本" id="标准输出"><span class="占位">（暂无输出）</span></pre>
+        </div>
+
+        <div class="错误块" id="错误块" hidden>
+          <div class="错误头">
+            <span class="错误徽" id="错误类">错</span>
+            <div class="错误正文">
+              <p class="错误文" id="错误文"></p>
+              <button type="button" class="错误跳转" id="错误定位" hidden>
+                <span id="错误跳转文">跳到出错位置</span>
+              </button>
+            </div>
+          </div>
+          <div class="调用栈" id="调用栈区" hidden>
+            <h3 class="块标题">调用栈</h3>
+            <ul class="栈列" id="栈列"></ul>
+          </div>
+        </div>
+
+        <div class="提示块" id="提示块" hidden>
+          <p id="提示文本"></p>
+        </div>
+      </div>
+
+      <div class="页" id="页-速查" role="tabpanel" aria-labelledby="标签-速查" hidden>
+        <div class="过滤条">
+          <input type="search" id="过滤输入" class="过滤框" placeholder="输入以过滤关键字、内置、运算符…"
+                 aria-label="过滤速查表" autocomplete="off">
+        </div>
+        <div class="速查内容" id="速查内容">
+          <p class="速查提示" id="速查提示">正在加载语言谱…</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="底栏">
+    <span>爻语 v<span id="版本号">0.1.0</span> · 解释器 Python 3.11 · 纯静态离线前端</span>
+    <span class="右">错误格式：第 N 行 第 M 列</span>
+  </footer>
+</div>
+
+<script src="/syntax.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

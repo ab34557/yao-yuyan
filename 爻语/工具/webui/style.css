@@ -1,0 +1,811 @@
+/* 爻语在线 IDE 样式 —— 纯 CSS，无外链字体、无 CDN。
+ *
+ * 版式：桌面双栏（编辑 | 输出·速查）；<900px 上下堆叠。
+ * 主题：深色，低饱和，强调可读性（中文正文行高 1.7，编辑器行高 1.75）。
+ */
+
+/* ── 设计变量 ───────────────────────────────────────────── */
+:root {
+  --底: #10151b;
+  --面: #161d25;
+  --面2: #1b242e;
+  --面3: #212c38;
+  --线: #29343f;
+  --线2: #364453;
+  --字: #d8e1ea;
+  --字弱: #93a4b4;
+  --字淡: #66788a;
+  --主: #f0b429;
+  --主深: #c8901a;
+  --成: #5cc98a;
+  --误: #ef6b6b;
+  --误底: #331c1f;
+  --误线: #6d2f33;
+
+  --字族: "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC",
+          "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC",
+          "WenQuanYi Micro Hei", system-ui, -apple-system, sans-serif;
+  --等宽: "Cascadia Mono", "Consolas", "SFMono-Regular", "DejaVu Sans Mono",
+          "Microsoft YaHei Mono", "Sarasa Mono SC", "Noto Sans Mono CJK SC",
+          monospace;
+
+  --字号: 14px;
+  --行高: 1.75;
+  --行高px: 24.5px;      /* = 14px × 1.75，行号栏与代码层共用 */
+  --编内边: 14px;        /* 编辑器内边距（左右） */
+  --编上下: 12px;
+  --圆: 8px;
+}
+
+/* ── 基础 ───────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--底);
+  color: var(--字);
+  font-family: var(--字族);
+  font-size: 14px;
+  line-height: 1.7;               /* 中文友好：≥ 1.6 */
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+h3 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: var(--字弱);
+}
+
+button, select, input, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+kbd {
+  font-family: var(--等宽);
+  font-size: 11px;
+  padding: 1px 5px;
+  border: 1px solid var(--线2);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--面2);
+  color: var(--字弱);
+}
+
+:focus-visible {
+  outline: 2px solid var(--主);
+  outline-offset: 1px;
+}
+
+::selection { background: rgba(72, 118, 164, .45); color: inherit; }
+
+/* hidden 属性必须胜过作者样式里的 display（如 .错误块{display:flex}） */
+[hidden] { display: none !important; }
+
+/* 滚动条（仅 WebKit，Firefox 走默认，不影响可用性） */
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: #33414f;
+  border: 3px solid var(--面);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover { background: #455667; }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* ── 整体骨架 ───────────────────────────────────────────── */
+.应用 {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.顶栏 {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 18px;
+  background: var(--面);
+  border-bottom: 1px solid var(--线);
+}
+
+.品牌 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.品牌字形 {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  background: linear-gradient(160deg, #2c2415, #1a2028);
+  border: 1px solid #4a3a1a;
+  color: var(--主);
+  font-size: 18px;
+  line-height: 1;
+  font-family: "KaiTi", "STKaiti", var(--字族);
+  user-select: none;
+}
+
+.品牌文字 {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.品牌文字 strong {
+  font-size: 16px;
+  letter-spacing: .12em;
+  font-weight: 600;
+}
+
+.品牌副 {
+  font-size: 12px;
+  color: var(--字淡);
+  letter-spacing: .06em;
+}
+
+.顶栏右 { display: flex; align-items: center; gap: 14px; }
+
+.后端状态 {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--字弱);
+  padding: 4px 10px;
+  border: 1px solid var(--线);
+  border-radius: 999px;
+  background: var(--面2);
+  white-space: nowrap;
+}
+
+.后端状态 .点 {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--字淡);
+  flex: 0 0 auto;
+}
+.后端状态.通 .点 { background: var(--成); box-shadow: 0 0 6px #5cc98a88; }
+.后端状态.断 .点 { background: var(--误); }
+.后端状态.通 { color: var(--字); }
+
+/* ── 工具条 ─────────────────────────────────────────────── */
+.工具条 {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 18px;
+  background: var(--面2);
+  border-bottom: 1px solid var(--线);
+  flex-wrap: wrap;
+}
+
+.示例组 { display: flex; align-items: center; gap: 9px; min-width: 0; }
+
+.工具标签 {
+  font-size: 12px;
+  color: var(--字淡);
+  white-space: nowrap;
+}
+
+#示例选择 {
+  appearance: none;
+  -webkit-appearance: none;
+  min-width: 168px;
+  max-width: 42vw;
+  padding: 6px 30px 6px 11px;
+  border: 1px solid var(--线2);
+  border-radius: 7px;
+  background-color: var(--面3);
+  background-image: linear-gradient(45deg, transparent 50%, var(--字弱) 50%),
+                    linear-gradient(135deg, var(--字弱) 50%, transparent 50%);
+  background-position: calc(100% - 15px) calc(50% + 1px), calc(100% - 10px) calc(50% + 1px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  color: var(--字);
+  font-size: 13px;
+}
+#示例选择:hover { border-color: #4b5c6d; }
+#示例选择:disabled { color: var(--字淡); cursor: default; }
+
+.工具右侧 { display: flex; align-items: center; gap: 10px; }
+
+.主按钮, .次按钮 {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 13px;
+  border: 1px solid transparent;
+  transition: background .12s ease, border-color .12s ease, opacity .12s ease;
+  white-space: nowrap;
+}
+
+.主按钮 {
+  background: var(--主);
+  color: #1a1206;
+  font-weight: 600;
+  border-color: #d9a11f;
+}
+.主按钮:hover { background: #f7c34a; }
+.主按钮:active { background: var(--主深); }
+.主按钮:disabled { cursor: progress; opacity: .75; }
+
+.主按钮 .按钮符 { font-size: 10px; line-height: 1; }
+.主按钮 .键位 {
+  font-family: var(--等宽);
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: #0000001f;
+  color: #5a4310;
+}
+
+.主按钮.运行中 .按钮符 {
+  width: 11px;
+  height: 11px;
+  border: 2px solid #6b5312;
+  border-top-color: #1a1206;
+  border-radius: 50%;
+  animation: 转 .7s linear infinite;
+}
+.主按钮.运行中 .按钮符::before { content: ""; }
+@keyframes 转 { to { transform: rotate(360deg); } }
+
+.次按钮 {
+  background: transparent;
+  border-color: var(--线2);
+  color: var(--字弱);
+}
+.次按钮:hover { border-color: #4b5c6d; color: var(--字); }
+
+/* ── 主体两栏 ───────────────────────────────────────────── */
+.主体 {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px;
+}
+
+.面板 {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--面);
+  border: 1px solid var(--线);
+  border-radius: var(--圆);
+  overflow: hidden;
+}
+
+.面板头 {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 13px;
+  background: var(--面2);
+  border-bottom: 1px solid var(--线);
+  font-size: 12px;
+  color: var(--字弱);
+}
+
+.文件名 {
+  font-family: var(--等宽);
+  font-size: 12px;
+  color: var(--字);
+  letter-spacing: .02em;
+}
+.文件名::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--主);
+  margin-right: 7px;
+  vertical-align: 1px;
+}
+
+.面板头右 { display: inline-flex; gap: 6px; align-items: center; font-variant-numeric: tabular-nums; }
+.面板头右 .分隔 { color: var(--线2); }
+
+/* ── 编辑器 ─────────────────────────────────────────────── */
+.编辑区 {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  background: #12181f;
+  overflow: hidden;
+}
+
+.行号栏 {
+  flex: 0 0 auto;
+  width: 52px;
+  padding: calc(var(--编上下) + 1px) 9px calc(var(--编上下) + 1px) 0;
+  text-align: right;
+  font-family: var(--等宽);
+  font-size: 12px;
+  line-height: var(--行高px);
+  color: #4d5c6b;
+  background: #0f151b;
+  border-right: 1px solid var(--线);
+  overflow: hidden;
+  user-select: none;
+  -moz-user-select: none;
+}
+
+.行号栏 .行号.当前 { color: var(--主); }
+.行号栏 .行号 { cursor: pointer; border-radius: 3px; }
+.行号栏 .行号:hover { color: var(--字弱); background: #1c2733; }
+
+.栈列 .栈跳 {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+}
+.栈列 .栈跳:hover { color: #ffd7d7; }
+
+.代码层 {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* 高亮层与输入层必须像素级重合：同字体、同行高、同内边距、同 white-space */
+.高亮层,
+.代码框 {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: var(--编上下) var(--编内边);
+  border: 0;
+  font-family: var(--等宽);
+  font-size: var(--字号);
+  line-height: var(--行高px);
+  letter-spacing: normal;
+  font-variant-ligatures: none;
+  font-kerning: none;
+  tab-size: 2;
+  -moz-tab-size: 2;
+  white-space: pre;
+  word-wrap: normal;
+  overflow-wrap: normal;
+}
+
+.高亮层 {
+  overflow: hidden;
+  pointer-events: none;
+  color: var(--字);
+  z-index: 1;
+}
+
+.高亮层 code {
+  font: inherit;
+  white-space: inherit;
+  background: none;
+  padding: 0;
+  display: block;
+}
+
+.代码框 {
+  z-index: 2;
+  resize: none;
+  background: transparent;
+  color: transparent;
+  caret-color: var(--主);
+  overflow: auto;
+  outline: none;
+  -webkit-text-fill-color: transparent;
+}
+.代码框::selection { background: rgba(78, 128, 178, .38); }
+
+.高亮层.隐藏 { visibility: hidden; }
+
+/* 高亮配色 */
+.tk-kw   { color: #f0a35e; font-weight: 600; }   /* 关键字 */
+.tk-lit  { color: #e8a0c8; }                     /* 它 真 假 空 且 或 非 */
+.tk-bi   { color: #79b8e8; }                     /* 内置函数 */
+.tk-str  { color: #a9d18b; }                     /* 字 */
+.tk-num  { color: #d7a8ee; }                     /* 数 */
+.tk-cmt  { color: #5f7488; font-style: italic; } /* 注释 */
+.tk-op   { color: #e6c860; }                     /* ⇒ ▷ */
+.tk-blk  { color: #e6c860; font-weight: 600; }   /* 【 】 */
+.tk-sym  { color: #9fb2c4; }                     /* 算术/比较 */
+.tk-punc { color: #8598a9; }                     /* 标点 */
+.tk-nam  { color: #cfd9e3; }                     /* `反引号名` */
+
+.编辑脚注 {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 13px;
+  border-top: 1px solid var(--线);
+  background: var(--面2);
+  font-size: 11px;
+  color: var(--字淡);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.编辑脚注 .右 { overflow: hidden; text-overflow: ellipsis; }
+
+/* ── 右侧面板：标签页 ───────────────────────────────────── */
+.标签栏 {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  padding: 0 8px;
+  background: var(--面2);
+  border-bottom: 1px solid var(--线);
+  min-height: 37px;
+}
+
+.标签 {
+  appearance: none;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 8px 13px;
+  cursor: pointer;
+  color: var(--字淡);
+  font-size: 13px;
+  transition: color .12s ease, border-color .12s ease;
+}
+.标签:hover { color: var(--字); }
+.标签.活动 {
+  color: var(--主);
+  border-bottom-color: var(--主);
+  font-weight: 600;
+}
+
+.标签栏右 {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  padding-right: 6px;
+  font-size: 12px;
+  color: var(--字弱);
+  font-variant-numeric: tabular-nums;
+}
+
+.页 {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.页[hidden] { display: none; }
+
+/* ── 输出页 ─────────────────────────────────────────────── */
+.运行状态条 {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 13px;
+  border-bottom: 1px solid var(--线);
+  font-size: 12px;
+  color: var(--字弱);
+  min-height: 34px;
+}
+
+.状态徽 {
+  flex: 0 0 auto;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  border: 1px solid var(--线2);
+  color: var(--字弱);
+  background: var(--面2);
+  white-space: nowrap;
+}
+.状态徽.运行 { color: var(--主); border-color: #6b5312; background: #2b2410; }
+.状态徽.成功 { color: var(--成); border-color: #2c5e42; background: #12241a; }
+.状态徽.失败 { color: var(--误); border-color: var(--误线); background: var(--误底); }
+
+.状态提示 {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.输出块 {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 13px 4px;
+}
+
+输出块 .块标题 { margin-bottom: 5px; }
+
+.输出文本 {
+  flex: 1 1 auto;
+  min-height: 90px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--线);
+  border-radius: 7px;
+  background: #0e141a;
+  color: var(--字);
+  font-family: var(--等宽);
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow: auto;
+  tab-size: 2;
+}
+
+.输出文本 .占位 { color: var(--字淡); font-style: normal; }
+
+.错误块 {
+  flex: 0 0 auto;
+  margin: 8px 13px 12px;
+  border: 1px solid var(--误线);
+  border-radius: 7px;
+  background: var(--误底);
+  overflow: hidden;
+  max-height: 46%;
+  display: flex;
+  flex-direction: column;
+}
+
+.错误头 {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 9px 11px;
+  min-height: 0;
+}
+
+.错误徽 {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  padding: 1px 8px;
+  border-radius: 4px;
+  background: #59252a;
+  color: #ffd7d7;
+  font-size: 11px;
+  font-family: var(--等宽);
+  letter-spacing: .02em;
+}
+
+.错误正文 {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+}
+
+.错误文 {
+  margin: 0;
+  color: #ff9d9d;
+  font-family: var(--等宽);
+  font-size: 13px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+  user-select: text;
+}
+
+.错误跳转 {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border: 1px solid var(--误线);
+  border-radius: 5px;
+  background: #432126;
+  color: #ffc4c4;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+.错误跳转::before { content: "→"; font-size: 11px; }
+.错误跳转:hover { background: #552a30; color: #ffe0e0; }
+
+.调用栈 {
+  border-top: 1px dashed var(--误线);
+  padding: 8px 11px 10px;
+  overflow: auto;
+  max-height: 150px;
+}
+.调用栈 .块标题 { color: #d99a9d; margin-bottom: 4px; }
+
+.栈列 {
+  margin: 0;
+  padding-left: 16px;
+  font-family: var(--等宽);
+  font-size: 12px;
+  line-height: 1.7;
+  color: #e3b6b8;
+}
+.栈列 li { margin: 1px 0; }
+
+.提示块 {
+  flex: 0 0 auto;
+  margin: 8px 13px 12px;
+  padding: 9px 12px;
+  border: 1px solid #35506b;
+  border-radius: 7px;
+  background: #131f2b;
+  color: #a9c8e4;
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+.提示块 p { margin: 0; }
+.提示块.警告 { border-color: var(--误线); background: var(--误底); color: #f0b6b6; }
+
+/* ── 速查页 ─────────────────────────────────────────────── */
+.过滤条 {
+  flex: 0 0 auto;
+  padding: 9px 13px;
+  border-bottom: 1px solid var(--线);
+}
+
+.过滤框 {
+  width: 100%;
+  padding: 7px 11px;
+  border-radius: 7px;
+  border: 1px solid var(--线2);
+  background: var(--面3);
+  color: var(--字);
+  font-size: 13px;
+}
+.过滤框::placeholder { color: var(--字淡); }
+.过滤框:focus { border-color: var(--主深); outline: none; }
+
+.速查内容 {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 6px 13px 16px;
+}
+
+.速查提示 {
+  color: var(--字淡);
+  font-size: 12.5px;
+  padding: 10px 2px;
+  margin: 0;
+}
+
+.速查组 { margin-top: 12px; }
+
+.速查组头 {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 0 2px 6px;
+  border-bottom: 1px solid var(--线);
+  margin-bottom: 4px;
+}
+.速查组头 h3 { color: var(--字); font-size: 12.5px; }
+.速查组头 .计数 { font-size: 11px; color: var(--字淡); margin-left: auto; font-variant-numeric: tabular-nums; }
+
+.速查表 {
+  display: grid;
+  grid-template-columns: minmax(52px, max-content) 1fr;
+  gap: 2px 12px;
+  align-items: baseline;
+  margin: 0;
+}
+
+.速查词 {
+  font-family: var(--等宽);
+  font-size: 13px;
+  color: var(--主);
+  padding: 3px 0;
+  white-space: nowrap;
+}
+.速查词.内置 { color: #79b8e8; }
+.速查词.运算 { color: #e6c860; }
+
+.速查义 {
+  font-size: 12.5px;
+  color: var(--字弱);
+  padding: 3px 0;
+  line-height: 1.65;
+  word-break: break-word;
+}
+
+.速查空 {
+  color: var(--字淡);
+  font-size: 12.5px;
+  padding: 16px 2px;
+}
+
+/* ── 底栏 ───────────────────────────────────────────────── */
+.底栏 {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 18px;
+  border-top: 1px solid var(--线);
+  background: var(--面);
+  color: var(--字淡);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.底栏 .右 { overflow: hidden; text-overflow: ellipsis; }
+
+/* ── 窄屏：上下堆叠 ─────────────────────────────────────── */
+@media (max-width: 900px) {
+  body { overflow: auto; }
+
+  .应用 { height: auto; min-height: 100%; }
+
+  .主体 {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: minmax(0, auto);
+    padding: 10px;
+  }
+
+  .编辑面板 { height: 58vh; min-height: 320px; }
+  .侧面板 { height: 70vh; min-height: 340px; }
+
+  .顶栏 { padding: 9px 12px; flex-wrap: wrap; }
+  .工具条 { padding: 9px 12px; }
+  .品牌副 { display: none; }
+  #示例选择 { max-width: 56vw; min-width: 132px; }
+  .底栏 { padding: 5px 12px; }
+  .底栏 .右 { display: none; }
+  .主按钮 .键位 { display: none; }
+  .编辑脚注 .右 { display: none; }
+}
+
+@media (max-width: 560px) {
+  :root { --编内边: 10px; }
+  .行号栏 { width: 40px; padding-right: 7px; font-size: 11px; }
+  .编辑脚注 { font-size: 10px; }
+  .状态提示 { display: none; }
+}
+
+/* 减少动效偏好 */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
